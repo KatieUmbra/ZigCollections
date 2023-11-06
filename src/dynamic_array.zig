@@ -109,14 +109,18 @@ pub fn DynamicArray(comptime T: type) type {
 
         /// Removes N elements from the back
         pub fn eraseBack(self: *Self, amount: usize) void {
-            self._size -= amount;
+            if (amount <= self._size) {
+                self._size -= amount;
+            } else {
+                self._size = 0;
+            }
         }
 
         /// Removes N elements from the front
-        pub fn eraseFront(self: *Self, amount: usize) void {
+        pub fn eraseFront(self: *Self, amount: usize) !void {
             var i: u32 = 0;
             while (i < amount) {
-                self.delete(0);
+                try self.delete(0);
                 i += 1;
             }
         }
