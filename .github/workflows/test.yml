@@ -1,5 +1,5 @@
 name: Testing
-run-name: ${{ github.actor }} Pushed.
+run-name: ${{ github.actor }} Pushed, Running Unit Tests.
 
 on:
   pull_request:

@@ -1,8 +1,8 @@
 name: Generate Documentation
-run-name: ${{ github.actor }} Pushed.
+run-name: ${{ github.actor }} Pushed, Generating Documentation.
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
 
 permissions:
   contents: read
