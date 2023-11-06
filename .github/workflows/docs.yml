@@ -25,7 +25,7 @@ jobs:
       - name: Installing Zig
         uses: goto-bus-stop/setup-zig@v2.1.1
       - name: Generate Docs
-        run: zig build-lib --name ZigCollections -femit-docs src/zig_collections.zig
+        run: zig build-lib --name ZigCollections -femit-docs -fno-emit-bin src/zig_collections.zig
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload Artifact
