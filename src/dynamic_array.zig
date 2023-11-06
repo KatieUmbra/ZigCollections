@@ -29,10 +29,30 @@ pub fn DynamicArray(comptime T: type) type {
 
         pub fn set(self: *Self, element: T, index: usize) !void {
             if (self._limit == index) {
-                self.pushBack(element);
+                try self.pushBack(element);
             } else {
                 self._data[index] = element;
             }
+        }
+
+        pub fn push(self: *Self, element: T, index: usize) !void {
+            if (index < self._size) {
+                const values = self._data[index..self._size];
+                var values_copy = try self._allocator.dupe(T, values);
+                self.erase(values_copy.len);
+                try self.pushBack(element);
+                for (values_copy) |value| {
+                    try self.pushBack(value);
+                }
+            } else if (index == self._size) {
+                try self.pushBack(element);
+            } else {
+                return error.BadInput;
+            }
+        }
+
+        pub fn pushFront(self: *Self, element: T) !void {
+            try self.push(element, 0);
         }
 
         pub fn pushBack(self: *Self, element: T) !void {
@@ -48,15 +68,21 @@ pub fn DynamicArray(comptime T: type) type {
             return self._size;
         }
 
-        pub fn pop(self: *Self) void {
+        pub fn pop(self: *Self) T {
+            const last = self._data[self._size];
             self._size -= 1;
+            return last;
         }
 
-        pub fn get(self: *Self, index: usize) !T {
+        pub fn erase(self: *Self, amount: usize) void {
+            self._size -= amount;
+        }
+
+        pub fn get(self: *Self, index: usize) ?T {
             if (index <= self._size) {
                 return self._data[index];
             }
-            return error.BadIndex;
+            return null;
         }
     };
 }
