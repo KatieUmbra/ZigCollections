@@ -1,0 +1,37 @@
+name: Generate Documentation
+run-name: ${{ github.actor }} Pushed.
+on:
+  push:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Installing Zig
+        uses: goto-bus-stop/setup-zig@v2.1.1
+      - name: Generate Docs
+        run: zig build-lib --name ZigCollections -femit-docs src/zig_collections.zig
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: '.'
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v2

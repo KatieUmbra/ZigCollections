@@ -67,7 +67,9 @@ pub fn DynamicArray(comptime T: type) type {
         /// Removes and returns element at index
         pub fn pop(self: *Self, index: usize) !T {
             if (index == self._size) {
-                return self.popLast();
+                const returned = self._data[self._size];
+                self._size -= 1;
+                return returned;
             } else if (index < self._size) {
                 const slice = self._data[index + 1 .. self._size];
                 const values = try self._allocator.dupe(T, slice);
@@ -86,13 +88,18 @@ pub fn DynamicArray(comptime T: type) type {
         }
 
         /// Removes and returns last element
-        pub fn popBack(self: *Self) T {
-            return self.pop(self._size);
+        pub fn popBack(self: *Self) !T {
+            const returned = try self.pop(self._size);
+            return returned;
         }
 
         /// Removes and returns first element
-        pub fn popFront(self: *Self) T {
-            return self.pop(0);
+        pub fn popFront(self: *Self) !T {
+            const returned = try self.pop(0);
+            if (!returned) |err| {
+                return err;
+            }
+            return returned;
         }
 
         /// Removes element at index
