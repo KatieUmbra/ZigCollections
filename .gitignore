@@ -3,3 +3,8 @@ zig-out/
 build/
 out/
 docs/
+*.a
+*.o
+*.lib
+*.dll
+*.exe

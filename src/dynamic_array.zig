@@ -58,7 +58,8 @@ pub fn DynamicArray(comptime T: type) type {
         pub fn pushBack(self: *Self, element: T) !void {
             if (self._size == self._limit) {
                 self._limit *= 2;
-                self._data = try self._allocator.realloc(self._data, self._limit);
+                var newData = try self._allocator.realloc(self._data, self._limit);
+                self._data = newData;
             }
             self._data[self._size] = element;
             self._size += 1;
@@ -66,11 +67,11 @@ pub fn DynamicArray(comptime T: type) type {
 
         /// Removes and returns element at index
         pub fn pop(self: *Self, index: usize) !T {
-            if (index == self._size) {
-                const returned = self._data[self._size];
+            if (index == self._size - 1) {
+                const returned = self._data[self._size - 1];
                 self._size -= 1;
                 return returned;
-            } else if (index < self._size) {
+            } else if (index < self._size - 1) {
                 const slice = self._data[index + 1 .. self._size];
                 const values = try self._allocator.dupe(T, slice);
                 const returned = try self._allocator.dupe(T, self._data[index .. index + 1]);
@@ -80,7 +81,6 @@ pub fn DynamicArray(comptime T: type) type {
                 for (values) |value| {
                     try self.pushBack(value);
                 }
-                self._size -= 1;
                 return returned[0];
             } else {
                 return error.BadInput;
@@ -89,16 +89,13 @@ pub fn DynamicArray(comptime T: type) type {
 
         /// Removes and returns last element
         pub fn popBack(self: *Self) !T {
-            const returned = try self.pop(self._size);
+            const returned = try self.pop(self._size - 1);
             return returned;
         }
 
         /// Removes and returns first element
         pub fn popFront(self: *Self) !T {
             const returned = try self.pop(0);
-            if (!returned) |err| {
-                return err;
-            }
             return returned;
         }
 
@@ -182,7 +179,7 @@ pub fn DynamicArray(comptime T: type) type {
 
         /// Gets element at index N
         pub fn get(self: *Self, index: usize) ?T {
-            if (index <= self._size) {
+            if (index < self._size) {
                 return self._data[index];
             }
             return null;
