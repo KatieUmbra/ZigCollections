@@ -185,11 +185,11 @@ test "Dynamic Array Reserve/Size" {
 
     try dynamicArray.reserve(20);
 
-    try testing.expect(dynamicArray.size() == 24);
+    try testing.expect(dynamicArray.capacity() == 24);
 }
 
 test "Dynamic Array Resize" {
-    const allocator = std.testing.allocator;
+    var allocator = testing.allocator;
     var dynamicArray = DynamicArray(i32){};
     try dynamicArray.init(allocator);
     defer dynamicArray.deinit();
