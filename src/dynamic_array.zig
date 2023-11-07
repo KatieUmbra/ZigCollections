@@ -57,8 +57,9 @@ pub fn DynamicArray(comptime T: type) type {
         /// Pushes at the end of the vector
         pub fn pushBack(self: *Self, element: T) !void {
             if (self._size == self._limit) {
-                self._limit *= 2;
-                var newData = try self._allocator.realloc(self._data, self._limit);
+                const newSize = self._data.len * 2;
+                var newData = try self._allocator.realloc(self._data, newSize);
+                self._limit = newSize;
                 self._data = newData;
             }
             self._data[self._size] = element;
@@ -136,7 +137,7 @@ pub fn DynamicArray(comptime T: type) type {
 
         /// Reserves N extra spaces exactly
         pub fn reserve(self: *Self, _size: usize) !void {
-            const newLimit = self._size + _size;
+            const newLimit = self._limit + _size;
             const resized = self._allocator.resize(self._data, newLimit);
             if (!resized) {
                 return error.FailedResize;
