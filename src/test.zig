@@ -11,13 +11,14 @@ const DynamicArray = collections.DynamicArray;
 // [X] Delete
 // [X] Erase Back/Front
 // [X] Set/Get
-// [ ] Pop
-// [ ] PopBack
-// [ ] PopFront
-// [ ] Push
-// [ ] PushBack
-// [ ] PushFront
-// [ ] Reserve/Size
+// [x] Pop
+// [X] PopBack
+// [X] PopFront
+// [X] Push
+// [X] PushBack
+// [X] PushFront
+// [X] Reserve/Size
+// [X] Resize
 // ==========================================
 
 test "Dynamic Array Expand/Capacity" {
@@ -94,4 +95,111 @@ test "Dynamic Array Pop" {
 
     const value = try dynamicArray.pop(3);
     try testing.expect(value == 2);
+}
+
+test "Dynamic Array PopBack" {
+    const allocator = std.testing.allocator;
+    var dynamicArray = DynamicArray(i32){};
+    try dynamicArray.init(allocator);
+    defer dynamicArray.deinit();
+
+    try dynamicArray.pushBack(1);
+    try dynamicArray.pushBack(2);
+
+    const value = try dynamicArray.popBack();
+    try testing.expect(value == 2);
+}
+
+test "Dynamic Array PopFront" {
+    const allocator = std.testing.allocator;
+    var dynamicArray = DynamicArray(i32){};
+    try dynamicArray.init(allocator);
+    defer dynamicArray.deinit();
+
+    try dynamicArray.pushBack(1);
+    try dynamicArray.pushBack(2);
+
+    const value = try dynamicArray.popFront();
+    try testing.expect(value == 1);
+}
+
+test "Dynamic Array Push" {
+    const allocator = std.testing.allocator;
+    var dynamicArray = DynamicArray(i32){};
+    try dynamicArray.init(allocator);
+    defer dynamicArray.deinit();
+
+    try dynamicArray.pushBack(0);
+    try dynamicArray.pushBack(1);
+    try dynamicArray.pushBack(2);
+    try dynamicArray.pushBack(3);
+
+    try dynamicArray.push(10, 1);
+
+    const element = dynamicArray.get(1).?;
+    try testing.expect(element == 10);
+}
+
+test "Dynamic Array PushBack" {
+    const allocator = std.testing.allocator;
+    var dynamicArray = DynamicArray(i32){};
+    try dynamicArray.init(allocator);
+    defer dynamicArray.deinit();
+
+    try dynamicArray.pushBack(0);
+    try dynamicArray.pushBack(1);
+    try dynamicArray.pushBack(2);
+    try dynamicArray.pushBack(3);
+
+    const last = dynamicArray.get(3).?;
+    try testing.expect(last == 3);
+}
+
+test "Dynamic Array PushFront" {
+    const allocator = std.testing.allocator;
+    var dynamicArray = DynamicArray(i32){};
+    try dynamicArray.init(allocator);
+    defer dynamicArray.deinit();
+
+    try dynamicArray.pushBack(0);
+    try dynamicArray.pushBack(1);
+    try dynamicArray.pushBack(2);
+    try dynamicArray.pushBack(3);
+
+    try dynamicArray.pushFront(10);
+
+    const first = dynamicArray.get(0).?;
+    try testing.expect(first == 10);
+}
+
+test "Dynamic Array Reserve/Size" {
+    const allocator = std.testing.allocator;
+    var dynamicArray = DynamicArray(i32){};
+    try dynamicArray.init(allocator);
+    defer dynamicArray.deinit();
+
+    try dynamicArray.pushBack(0);
+    try dynamicArray.pushBack(1);
+    try dynamicArray.pushBack(2);
+    try dynamicArray.pushBack(3);
+
+    try dynamicArray.reserve(20);
+
+    try testing.expect(dynamicArray.size() == 24);
+}
+
+test "Dynamic Array Resize" {
+    const allocator = std.testing.allocator;
+    var dynamicArray = DynamicArray(i32){};
+    try dynamicArray.init(allocator);
+    defer dynamicArray.deinit();
+
+    try dynamicArray.pushBack(0);
+    try dynamicArray.pushBack(1);
+    try dynamicArray.pushBack(2);
+    try dynamicArray.pushBack(3);
+
+    try dynamicArray.resize(2);
+
+    try testing.expect(dynamicArray.size() == 2);
 }
